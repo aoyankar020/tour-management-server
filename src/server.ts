@@ -1,15 +1,14 @@
-import express from "express";
 import mongoose from "mongoose";
 import { Server } from "http";
 import { app } from "./app";
-import config from "./config/config";
+import { envVars } from "./config/config";
 
 let server: Server;
 
 // Connect to MongoDB and start the server
 const createServer = async () => {
   try {
-    const DB = await mongoose.connect(config.database_url);
+    await mongoose.connect(envVars.DATABASE_URL);
     mongoose.connection.on("connected", () => {
       console.log("✅ MongoDB connected");
     });
@@ -37,8 +36,8 @@ const createServer = async () => {
       default:
         console.log("❓ Unknown state");
     }
-    server = app.listen(5000, () => {
-      console.log("🚀 Server running on http://localhost:5000");
+    server = app.listen(envVars.PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${envVars.PORT}`);
     });
   } catch (error) {
     console.error("❌ Failed to connect to MongoDB:", error);
