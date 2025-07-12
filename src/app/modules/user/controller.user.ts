@@ -3,15 +3,17 @@ import { User } from "./model.user";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { userServices } from "./service.user";
 import { handler } from "../../utils/asyncUtils";
+import { sendResponse } from "../../utils/responseUtil";
 
 const createUser = handler.handleAsynce(
   async (req: Request, res: Response, next: NextFunction) => {
     const userData = req.body;
     const user = userServices.createUserService(userData);
-    res.status(StatusCodes.CREATED).send({
-      status: ReasonPhrases.CREATED,
+    sendResponse(res, {
+      statusCode: StatusCodes.CREATED,
+      success: true,
       message: "User Created Successfully",
-      user,
+      data: user,
     });
   }
 );
@@ -19,10 +21,12 @@ const createUser = handler.handleAsynce(
 const getUsers = handler.handleAsynce(
   async (req: Request, res: Response, next: NextFunction) => {
     const users = await userServices.getUsers();
-    res.status(StatusCodes.OK).send({
-      status: ReasonPhrases.OK,
+    sendResponse(res, {
+      data: users.users,
+      statusCode: StatusCodes.OK,
+      success: true,
       message: "Users Retrieved Successfully",
-      users,
+      meta: { total: users.Total },
     });
   }
 );
