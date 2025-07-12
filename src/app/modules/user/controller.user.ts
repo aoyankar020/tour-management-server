@@ -2,10 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "./model.user";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { userServices } from "./service.user";
+import { handler } from "../../utils/asyncUtils";
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    throw new Error("This is a test error for global error handling");
+const createUser = handler.handleAsynce(
+  async (req: Request, res: Response, next: NextFunction) => {
     const userData = req.body;
     const user = userServices.createUserService(userData);
     res.status(StatusCodes.CREATED).send({
@@ -13,9 +13,18 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       message: "User Created Successfully",
       user,
     });
-  } catch (error) {
-    next(error);
   }
-};
+);
 
-export const userController = { createUser };
+const getUsers = handler.handleAsynce(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const users = await userServices.getUsers();
+    res.status(StatusCodes.OK).send({
+      status: ReasonPhrases.OK,
+      message: "Users Retrieved Successfully",
+      users,
+    });
+  }
+);
+
+export const userController = { createUser, getUsers };
