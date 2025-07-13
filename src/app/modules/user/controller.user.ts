@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "./model.user";
-import { ReasonPhrases, StatusCodes } from "http-status-codes";
+
+import { StatusCodes } from "http-status-codes";
 import { userServices } from "./service.user";
 import { handler } from "../../utils/asyncUtils";
 import { sendResponse } from "../../utils/responseUtil";
