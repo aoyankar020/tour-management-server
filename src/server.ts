@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Server } from "http";
 import { app } from "./app";
 import { envVars } from "./app/config/config";
+import { seedSuperAdmin } from "./app/middleware/superAdmin";
 
 let server: Server;
 
@@ -60,17 +61,6 @@ const handleExit = (signal: string) => {
   }
 };
 
-// Way-1 Handle unhandled promise rejections
-// process.on("unhandledRejection", (err) => {
-//   console.log("Unhandled Rejection Received", err);
-//   if (server) {
-//     server.close(() => {
-//       process.exit(1);
-//     });
-//   }
-//   process.exit(1);
-// });
-
 // Way-2 Handle unhandled promise rejections
 process.on("unhandledRejection", (reason) => {
   console.error("❌ Unhandled Rejection:", reason);
@@ -85,4 +75,7 @@ process.on("uncaughtException", (reason) => {
 process.on("SIGINT", () => handleExit("SIGINT"));
 process.on("SIGTERM", () => handleExit("SIGTERM"));
 
-createServer();
+(async () => {
+  await createServer();
+  await seedSuperAdmin();
+})();

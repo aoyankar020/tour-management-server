@@ -1,3 +1,4 @@
+import { envVars } from "../../config/config";
 import { IProviders, IUser } from "./interface.user";
 import { User } from "./model.user";
 import bcrypt from "bcryptjs";
@@ -8,7 +9,10 @@ const createUserService = async (payload: Partial<IUser>) => {
   if (isEmailExists.length > 0) {
     throw new Error("User already exists with this email");
   }
-  const hashPassword = await bcrypt.hash(password as string, 10);
+  const hashPassword = await bcrypt.hash(
+    password as string,
+    Number(envVars.HASH_SALT)
+  );
   if (!hashPassword) {
     throw new Error("Failed to hash password");
   }

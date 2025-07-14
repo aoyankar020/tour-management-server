@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser>(
     role: { type: String, enum: Object.values(ROLE), default: ROLE.USER },
     bookings: { type: [Schema.ObjectId] },
     auths: { type: [authSchema] },
-    gudes: { type: [Schema.ObjectId] },
+    guides: { type: [Schema.ObjectId] },
   },
   {
     timestamps: true,
