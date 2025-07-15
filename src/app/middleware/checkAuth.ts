@@ -22,5 +22,6 @@ export const checkAuthentication =
         message: "Token verification failed",
       });
     }
+    req.user = isVarified;
     next();
   };

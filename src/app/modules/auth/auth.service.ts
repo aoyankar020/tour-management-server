@@ -32,7 +32,7 @@ const credentialsCheckingService = async (payload: Partial<IUser>) => {
   const tokens = getTokens(user);
   delete user.password;
   return {
-    accessToken: tokens.jwt_token,
+    accessToken: tokens.jwt_access_token,
     refreshToken: tokens.jwt_refreshToken,
     user: user,
   };
@@ -42,8 +42,26 @@ const getNewAccessToken = async (refreshToken: string) => {
   const newAccessToken = getNewAccessTokenByRefreshToken(refreshToken);
   return newAccessToken;
 };
+const getResetPasswordService = async (
+  oldPassword: string,
+  newPassword: string,
+  decodedToken: JwtPayload
+) => {
+  console.log(" Auth Service Decoded Token :", decodedToken);
+  const user = await User.findOne({ email: decodedToken.email });
+
+  if (!user) {
+  }
+  const isMatched = await bcrypt.compare(oldPassword, user!.password as string);
+  if (!isMatched) {
+    return new Error("Your Old Password is Not Correct");
+  }
+  user!.password = await bcrypt.hash(newPassword, Number(envVars.HASH_SALT));
+  user!.save();
+};
 
 export const authServices = {
   credentialsCheckingService,
   getNewAccessToken,
+  getResetPasswordService,
 };

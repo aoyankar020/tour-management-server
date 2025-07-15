@@ -6,6 +6,8 @@ import { handler } from "../../utils/asyncUtils";
 import { authServices } from "./auth.service";
 
 import { setCookies } from "../../utils/setCookies";
+import { getTokens } from "../../utils/generateTokens";
+import { envVars } from "../../config/config";
 
 export const loggedInController = handler.handleAsynce(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -72,9 +74,73 @@ const logout = handler.handleAsynce(
     });
   }
 );
+const resetPasswordController = handler.handleAsynce(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user;
+    if (!decodedToken) {
+      return sendResponse(res, {
+        statusCode: StatusCodes.BAD_REQUEST,
+        success: false,
+        message: "Decoded Token not found",
+        data: null,
+      });
+    }
+
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+
+    authServices.getResetPasswordService(
+      oldPassword,
+      newPassword,
+      decodedToken
+    );
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Password changed Successfully",
+      data: null,
+    });
+  }
+);
+const GoogleCallbackController = handler.handleAsynce(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const User = req.user;
+    const state_url = req.params.state || "";
+    // Remove leading slash if it exists
+    const redirectTo = state_url.startsWith("/")
+      ? state_url.slice(1)
+      : state_url;
+
+    if (!User) {
+      return sendResponse(res, {
+        statusCode: StatusCodes.BAD_REQUEST,
+        success: false,
+        message: "User Not Found",
+        data: null,
+      });
+    }
+    console.log("Google callback User: ", User);
+    const tokens = getTokens(User);
+    setCookies(res, {
+      accessToken: tokens.jwt_access_token,
+      refreshToken: tokens.jwt_refreshToken,
+    });
+
+    // sendResponse(res, {
+    //   statusCode: StatusCodes.OK,
+    //   success: true,
+    //   message: "Google Call Back",
+    //   data: null,
+    // });
+
+    res.redirect(`${envVars.FRONT_URL} /${redirectTo}`);
+  }
+);
 
 export const authControllers = {
   loggedInController,
   getNewTokenController,
   logout,
+  resetPasswordController,
+  GoogleCallbackController,
 };

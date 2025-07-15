@@ -10,7 +10,7 @@ export const getTokens = (user: Partial<IUser>) => {
     address: user.address,
     role: user.role,
   };
-  const jwt_token = generateToken(
+  const jwt_access_token = generateToken(
     payload,
     envVars.JWT_SECRET,
     envVars.JWT_EXPIRED
@@ -20,5 +20,5 @@ export const getTokens = (user: Partial<IUser>) => {
     envVars.JWT_REFRESH_SECRET,
     envVars.JWT_REFRESH_EXPIRES
   );
-  return { jwt_token, jwt_refreshToken };
+  return { jwt_access_token, jwt_refreshToken };
 };
