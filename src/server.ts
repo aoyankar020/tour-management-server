@@ -20,23 +20,23 @@ const createServer = async () => {
       console.error("❌ MongoDB connection error:", err);
     });
 
-    // for checking connection Health
-    switch (mongoose.connection.readyState) {
-      case 0:
-        console.log("❌ Disconnected");
-        break;
-      case 1:
-        console.log("✅ Connected");
-        break;
-      case 2:
-        console.log("⏳ Connecting...");
-        break;
-      case 3:
-        console.log("🔌 Disconnecting...");
-        break;
-      default:
-        console.log("❓ Unknown state");
-    }
+    // // for checking connection Health
+    // switch (mongoose.connection.readyState) {
+    //   case 0:
+    //     console.log("❌ Disconnected");
+    //     break;
+    //   case 1:
+    //     console.log("✅ Connected");
+    //     break;
+    //   case 2:
+    //     console.log("⏳ Connecting...");
+    //     break;
+    //   case 3:
+    //     console.log("🔌 Disconnecting...");
+    //     break;
+    //   default:
+    //     console.log("❓ Unknown state");
+    // }
     server = app.listen(envVars.PORT, () => {
       console.log(`🚀 Server running on http://localhost:${envVars.PORT}`);
     });

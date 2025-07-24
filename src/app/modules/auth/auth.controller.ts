@@ -8,25 +8,39 @@ import { authServices } from "./auth.service";
 import { setCookies } from "../../utils/setCookies";
 import { getTokens } from "../../utils/generateTokens";
 import { envVars } from "../../config/config";
+import passport from "passport";
 
 export const loggedInController = handler.handleAsynce(
   async (req: Request, res: Response, next: NextFunction) => {
-    const tokenType = await authServices.credentialsCheckingService(req.body);
-
-    if (!tokenType) {
-      res.status(StatusCodes.NON_AUTHORITATIVE_INFORMATION).json({
-        StatusCodes: StatusCodes.NON_AUTHORITATIVE_INFORMATION,
-        success: false,
-        message: "Invalid credentials",
-      });
-    }
-    setCookies(res, tokenType);
-    sendResponse(res, {
-      statusCode: StatusCodes.CREATED,
-      success: true,
-      message: "Successfully Logoged In",
-      data: tokenType,
-    });
+    passport.authenticate(
+      "local",
+      async (err: any, user: any, info: any, status: any) => {
+        if (err) {
+          return next(err);
+        }
+        if (!user) {
+          return next(new Error(info.message));
+        }
+        const tokens = getTokens(user);
+        if (!tokens) {
+          return next(new Error("Token not generated"));
+        }
+        setCookies(res, {
+          accessToken: tokens.jwt_access_token,
+          refreshToken: tokens.jwt_refreshToken,
+        });
+        sendResponse(res, {
+          statusCode: StatusCodes.CREATED,
+          success: true,
+          message: "Successfully Logoged In",
+          data: {
+            accessToken: tokens.jwt_access_token,
+            refreshToken: tokens.jwt_refreshToken,
+            user: user,
+          },
+        });
+      }
+    )(req, res, next);
   }
 );
 

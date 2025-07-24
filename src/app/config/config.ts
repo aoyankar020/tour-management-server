@@ -18,6 +18,15 @@ interface IEnvconfig {
   Authorization_Origin_URL: string;
   EXPRESS_SESSION_SECRET: string;
   FRONT_URL: string;
+  SSL: {
+    SSL_STORE_ID: string;
+    SSL_STORE_PASSWORD: string;
+    SSL_PAYMENT_API: string;
+    SSL_VALIDATION_API: string;
+    SSL_BACKEND_SUCCESS: string;
+    SSL_BACKEND_FAILED: string;
+    SSL_BACKEND_CANCEL: string;
+  };
 }
 
 const loadEnvVariables = (): IEnvconfig => {
@@ -38,6 +47,13 @@ const loadEnvVariables = (): IEnvconfig => {
     "Authorization_Origin_URL",
     "EXPRESS_SESSION_SECRET",
     "FRONT_URL",
+    "SSL_STORE_ID",
+    "SSL_STORE_PASSWORD",
+    "SSL_PAYMENT_API",
+    "SSL_VALIDATION_API",
+    "SSL_BACKEND_SUCCESS",
+    "SSL_BACKEND_FAILED",
+    "SSL_BACKEND_CANCEL",
   ];
 
   envVariables.map((key) => {
@@ -63,6 +79,16 @@ const loadEnvVariables = (): IEnvconfig => {
     Authorization_Origin_URL: process.env.Authorization_Origin_URL as string,
     EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET as string,
     FRONT_URL: process.env.FRONT_URL as string,
+    // SSL
+    SSL: {
+      SSL_STORE_ID: process.env.SSL_STORE_ID as string,
+      SSL_STORE_PASSWORD: process.env.SSL_STORE_PASSWORD as string,
+      SSL_PAYMENT_API: process.env.SSL_PAYMENT_API as string,
+      SSL_VALIDATION_API: process.env.SSL_VALIDATION_API as string,
+      SSL_BACKEND_SUCCESS: process.env.SSL_BACKEND_SUCCESS as string,
+      SSL_BACKEND_FAILED: process.env.SSL_BACKEND_FAILED as string,
+      SSL_BACKEND_CANCEL: process.env.SSL_BACKEND_CANCEL as string,
+    },
   };
 };
 

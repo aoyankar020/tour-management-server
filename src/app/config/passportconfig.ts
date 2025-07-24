@@ -3,9 +3,55 @@ import {
   Strategy as GoogleStrategy,
   VerifyCallback,
 } from "passport-google-oauth20";
+
 import { envVars } from "./config";
 import { User } from "../modules/user/model.user";
 import { ISACTIVE, ROLE } from "../modules/user/interface.user";
+import { Strategy as localStrategy } from "passport-local";
+import { JwtPayload } from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+passport.use(
+  new localStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+    },
+    async function (
+      email: string,
+      password: string,
+      done: (error: any, user?: any, options?: { message: string }) => void
+    ) {
+      try {
+        const isUserExist = await User.findOne({ email: email });
+        if (!isUserExist) {
+          return done(null, false, { message: "Email is Not Exist" });
+        }
+        const isGoogleAuthenticated = isUserExist.auths.some(
+          (provider) => provider.provider == "google"
+        );
+        if (isGoogleAuthenticated && !isUserExist.password) {
+          return done(null, false, {
+            message:
+              "You are Authenticated by Google . You should set password for credintials login after authnticate by google again . ",
+          });
+        }
+        const isMatched = await bcrypt.compare(
+          password,
+          isUserExist.password as string
+        );
+        if (!isMatched) {
+          return done(null, false, { message: "Password doesn't matched " });
+        }
+        return done(null, isUserExist, {
+          message: "User Loggedin Successfully",
+        });
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
 
 passport.use(
   new GoogleStrategy(
